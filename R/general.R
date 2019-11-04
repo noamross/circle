@@ -197,3 +197,11 @@ delete_cache <- function(repo = github_info()$name,
   out <- jsonlite::fromJSON(content(out$response, "text"), simplifyVector = FALSE)
   return(out$status)
 }
+
+getGitRoot <- function(cwd=getwd()) {
+  isTop <- function(cwd) normalizePath(cwd) == normalizePath(file.path(cwd, ".."))
+  if (dir.exists(file.path(cwd, ".git"))) return(cwd)
+  parent <- normalizePath(file.path(cwd, ".."))
+  if (parent == "/" || isTop(parent)) return("")
+  return(getGitRoot(parent))
+}
