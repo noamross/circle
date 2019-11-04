@@ -5,7 +5,7 @@
 \title{Get builds from Circle CI}
 \usage{
 get_builds(repo = NULL, user = github_info()$owner$login,
-  vcs_type = "gh", limit = 30, api_version = "v2")
+  vcs_type = "gh", limit = 30, api_version = "v2", api_key = NULL)
 }
 \arguments{
 \item{repo}{The Circle CI project. By default the current directory name will be used.}
@@ -20,6 +20,9 @@ Other possible values are "bitbucket".}
 
 \item{api_version}{A character string specifying the Circle CI API version.
 This usually does not need to be changed by the user.}
+
+\item{api_key}{A Circle CI API key. Existing keys will be autodetected. If
+none exists, the user will be prompted to create one.}
 }
 \description{
 Queries single builds from Circle CI pipeline runs

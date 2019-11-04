@@ -7,23 +7,25 @@
 #' @param limit How many builds should be returned? Maximum allowed by Circle is
 #'   30.
 #' @template api_version
+#' @template api_key
 #'
 #' @details To set a different API version, use the following scheme:
 #'   `https://circleci.com/api/v<api version>` The current default is "v2".
 #' @export
 get_builds <- function(repo = NULL, user = github_info()$owner$login, vcs_type = "gh",
-                       limit = 30, api_version = "v2") {
+                       limit = 30, api_version = "v2", api_key = NULL) {
   out <- get_jobs(get_workflows(get_pipelines(
     repo = repo, user = user,
     vcs_type = vcs_type, limit = limit,
-    api_version = api_version
+    api_version = api_version,
+    api_key = api_key
   )))
   return(out)
 }
 
 get_pipelines <- function(repo = NULL, user = github_info()$owner$login,
-                          limit = 30, build_number = NULL,
-                          vcs_type = "gh", api_version = "v2") {
+                          limit = 30, build_number = NULL, vcs_type = "gh",
+                          api_version = "v2", api_key = NULL) {
 
   if (is.null(repo)) {
     repo <- github_info()$name
@@ -34,6 +36,7 @@ get_pipelines <- function(repo = NULL, user = github_info()$owner$login,
           vcs_type, user, repo
         ),
         api_version = api_version,
+        api_key = api_key,
         query = list(limit = limit)
       )
     } else {
@@ -56,6 +59,7 @@ get_pipelines <- function(repo = NULL, user = github_info()$owner$login,
           vcs_type, user, repo
         ),
         api_version = api_version,
+        api_key = api_key,
         query = list(limit = limit)
       )
     } else {
@@ -66,6 +70,7 @@ get_pipelines <- function(repo = NULL, user = github_info()$owner$login,
           build_number
         ),
         api_version = api_version,
+        api_key = api_key,
         query = list(limit = limit)
       ))
     }
@@ -78,7 +83,7 @@ get_pipelines <- function(repo = NULL, user = github_info()$owner$login,
   return(out)
 }
 
-get_workflows <- function(pipelines = NULL) {
+get_workflows <- function(pipelines = NULL, api_key = NULL) {
   if (is.null(pipelines)) {
     pipelines <- get_pipelines()
   }
@@ -86,7 +91,7 @@ get_workflows <- function(pipelines = NULL) {
   pipeline_id <- sapply(pipelines$content$items, function(x) x$id)
   # retrieve from pipeline/id endpoint
   workflows <- lapply(pipeline_id, function(id) {
-    circleHTTP("GET", path = sprintf("/pipeline/%s", id))
+    circleHTTP("GET", path = sprintf("/pipeline/%s", id), api_key = api_key)
   })
 
   # remove pipelines with empty workflows (e.g. cron builds)
@@ -102,13 +107,14 @@ get_workflows <- function(pipelines = NULL) {
 }
 
 # cron builds are not shown
-get_jobs <- function(workflow = NULL, id_only = FALSE) {
+get_jobs <- function(workflow = NULL, id_only = FALSE, api_key = NULL) {
   if (is.null(workflow)) {
     workflow <- get_workflows()
   }
 
   jobs <- lapply(workflow, function(workflow) {
-    circleHTTP("GET", path = sprintf("/workflow/%s/jobs", workflow$content$id))
+    circleHTTP("GET", path = sprintf("/workflow/%s/jobs", workflow$content$id),
+               api_key = api_key)
   })
 
   # simplify

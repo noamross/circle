@@ -15,8 +15,9 @@
 #'   This is used to pass the API token.
 #' @param body A named list or character string of what should be passed in the
 #'   request. Corresponds to the "-d" argument of the `curl` command.
-#' @param encode Encoding format. See [httr::POST].
 #' @template api_version
+#' @template api_key
+#' @param encode Encoding format. See [httr::POST].
 #'
 #' @return The JSON response, or the relevant error.
 #'
@@ -26,11 +27,16 @@ circleHTTP <- function(verb = "GET",
                        query = list(),
                        body = "",
                        api_version = "v2",
+                       api_key = NULL,
                        encode = "json") {
   url <- paste0("https://circleci.com/api/", api_version, path)
 
-  auth_circle()
-  query$"circle-token" <- read_token()
+  if (is.null(api_key)) {
+    auth_circle()
+    query$"circle-token" <- read_token()
+  } else {
+    query$"circle-token" = api_key
+  }
 
   # set user agent
   ua <- user_agent("http://github.com/pat-s/circle")

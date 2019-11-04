@@ -5,7 +5,7 @@
 \title{Circle CI HTTP Requests}
 \usage{
 circleHTTP(verb = "GET", path = "", query = list(), body = "",
-  api_version = "v2", encode = "json")
+  api_version = "v2", api_key = NULL, encode = "json")
 }
 \arguments{
 \item{verb}{A character string containing an HTTP verb, defaulting to `GET`.}
@@ -21,6 +21,9 @@ request. Corresponds to the "-d" argument of the `curl` command.}
 
 \item{api_version}{A character string specifying the Circle CI API version.
 This usually does not need to be changed by the user.}
+
+\item{api_key}{A Circle CI API key. Existing keys will be autodetected. If
+none exists, the user will be prompted to create one.}
 
 \item{encode}{Encoding format. See [httr::POST].}
 }
