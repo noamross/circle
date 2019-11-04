@@ -21,6 +21,7 @@ Suggests:
     covr,
     gh,
     git2r,
+    here,
     openssl,
     purrr,
     stats,
