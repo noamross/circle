@@ -1,4 +1,4 @@
 if (!is.null(Sys.getenv("CI"))) {
   api_key = Sys.getenv("API_KEY")
-  here::set_here("../../")
+  #here::set_here("../../")
 }
